@@ -4,8 +4,191 @@
         git checkout (branch kalian)
         git pull origin develop
 
-DAN SELALU BACA REAMI.MD
+DAN SELALU BACA READMI.MD
 INTERUKSI UPDATE ADA DISITU
+
+
+RESTOKU
+Smart Restaurant Ordering App for UMKM
+
+RESTOKU adalah aplikasi pemesanan restoran berbasis mobile yang dibuat menggunakan Flutter untuk membantu digitalisasi UMKM restoran dalam proses pemesanan, pembayaran, dan pengelolaan transaksi.
+
+Project ini dibuat sebagai tugas besar perkuliahan dengan konsep:
+
+Pengunjung dapat melakukan pemesanan makanan/minuman
+Kasir dapat mengelola pesanan dan pembayaran
+
+🚀 Features
+
+    👤 Pengunjung
+        Melihat daftar menu
+        Detail menu makanan/minuman
+        Menambahkan menu ke keranjang
+        Checkout pesanan
+        Melihat status pesanan
+
+    💼 Kasir
+        Dashboard kasir
+        Melihat daftar pesanan
+        Konfirmasi pesanan
+        Pembayaran:
+            Tunai
+            QRIS
+            EDC
+        Cetak struk pembayaran
+
+    Pembayaran masih menggunakan metode manual
+    🧠 Penjelasan
+
+        👉 Saat pengunjung klik Checkout, itu:
+        ❌ BELUM bayar
+
+        Tapi:
+        ✅ Mengirim pesanan ke kasir/dapur
+
+        Jadi pembayaran dilakukan:
+
+        di kasir secara tunai / QRIS
+        🔥 Ini paling cocok untuk:
+            Warung
+            Cafe
+            Resto UMKM
+            Tempat makan biasa
+
+= = = = = = = = = = = = = = = =
+
+#Project ini masoh tahap demo
+    - Belum menggunakan database
+    - Kasir dan Pengunjung masih di satu development
+    - Jika sudah tahap produksi, akan disesuakn tech stack dengan kebutuhan real di UMKM tersebut.
+
+= = = = = = = = = = = = = = = =
+
+🛠️ Tech Stack
+    Teknologi	            Keterangan
+    -Flutter	            Frontend Mobile
+    -Dart	                Bahasa Pemrograman
+    -GitHub	                Version Control
+    -Dummy Data	            Database (prototype)
+
+
+📁 Project Structure
+    lib/
+    │
+    ├── core/
+    │   ├── routes/
+    │   └── theme/
+    │
+    ├── screens/
+    │   ├── splash/
+    │   ├── role/
+    │   ├── customer/
+    │   ├── order/
+    │   └── cashier/
+    │
+    ├── widgets/
+    ├── data/
+    ├── models/
+    └── utils/
+
+👥 Team Division
+
+    Anggota	                Tugas
+    -Anggota 1	            App Core, Navigation, Testing
+    -Anggota 2	            Customer Menu & Cart
+    -Anggota 3	            Checkout & Order Status
+    -Anggota 4	            Cashier & Payment
+
+    Rincian Tugas
+    👨‍💻 ANGGOTA 1 — APP CORE + TESTING
+        Fokus:
+        Sebagai pusat integrasi project
+
+        Tugas:
+        ✅ Setup Flutter project
+        ✅ Setup GitHub repository
+        ✅ Struktur folder
+        ✅ Navigation / routing
+        ✅ Theme aplikasi
+        ✅ Bottom navigation
+        ✅ Reusable widget
+        ✅ Merge branch anggota lain
+        ✅ Testing semua fitur
+        ✅ Fix conflict Git
+
+        File yang dipegang:
+            main.dart
+            routes/
+            theme/
+            widgets/
+            utils/
+
+    👨‍💻 ANGGOTA 2 — MENU & CART
+        Fokus:
+        Flow eksplorasi makanan
+
+        Tugas:
+        ✅ Home customer
+        ✅ List menu
+        ✅ Detail menu
+        ✅ Search menu
+        ✅ Kategori makanan
+        ✅ Tambah ke cart
+        ✅ Quantity item
+
+        Folder:
+            screens/customer/
+
+    👨‍💻 ANGGOTA 3 — CHECKOUT & STATUS
+        Fokus:
+        Alur pemesanan customer
+
+        Tugas:
+        ✅ Halaman checkout
+        ✅ Input nama & meja
+        ✅ Ringkasan pesanan
+        ✅ Status order
+        ✅ Nomor antrian
+        ✅ Simulasi status:
+            menunggu
+            diproses
+            selesai
+
+        Folder:
+            screens/order/
+
+
+    👨‍💻 ANGGOTA 4 — KASIR & PEMBAYARAN
+        Fokus:
+        Flow kasir
+
+        Tugas:
+        ✅ Dashboard kasir
+        ✅ List pesanan masuk
+        ✅ Detail pesanan
+        ✅ Pilihan pembayaran:
+            Tunai
+            QRIS
+            EDC
+        ✅ Cetak struk
+        ✅ Simulasi pembayaran berhasil
+
+        Folder:
+            screens/cashier/
+
+🌳 Git Branch Strategy
+    main
+    develop
+    feature/core-testing
+    feature/customer-menu
+    feature/order-checkout
+    feature/cashier-payment
+
+🔥 Penjelasan Tiap Branch
+    Branch	            Fungsi
+    - feature/*	        Tempat coding masing-masing anggota
+    - develop	        Tempat gabungan semua fitur
+    - main	            Versi final/stabil untuk presentasi
 
 = = = = = = = = = = = = = = = = = = = = = =
 
