@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../screens/order/checkout_screen.dart';
 import '../controllers/cart_controller.dart';
 import '../models/cart_item_model.dart';
 
@@ -286,7 +287,36 @@ class _CartPageState extends State<CartPage> {
                   )
                 ],
               ),
-            )
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CheckoutScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: const Text(
+                  'Pesan Sekarang',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
