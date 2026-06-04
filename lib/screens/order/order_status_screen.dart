@@ -183,15 +183,17 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
           ),
           const SizedBox(height: 10),
           ScaleTransition(
-            scale: _statusIndex < 2 ? _pulseAnim : const AlwaysStoppedAnimation(1.0),
+            scale: _statusIndex < 2
+                ? _pulseAnim
+                : const AlwaysStoppedAnimation(1.0),
             child: Container(
               width: 110,
               height: 110,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.orange.withValues(alpha: 0.1),
+                color: Colors.orange.withOpacity(0.1),
                 border: Border.all(
-                    color: Colors.orange.withValues(alpha: 0.5), width: 2.5),
+                    color: Colors.orange.withOpacity(0.5), width: 2.5),
               ),
               child: Center(
                 child: Text(
@@ -211,8 +213,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
             children: [
               _infoChip(Icons.person_rounded, widget.order.customerName),
               const SizedBox(width: 8),
-              _infoChip(
-                  Icons.table_restaurant_rounded,
+              _infoChip(Icons.table_restaurant_rounded,
                   'Meja ${widget.order.tableNumber}'),
             ],
           ),
@@ -247,9 +248,9 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _statusColor.withValues(alpha: 0.08),
+        color: _statusColor.withOpacity(0.08),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _statusColor.withValues(alpha: 0.35)),
+        border: Border.all(color: _statusColor.withOpacity(0.35)),
       ),
       child: Row(
         children: [
@@ -282,8 +283,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                 const SizedBox(height: 4),
                 Text(
                   _descs[_statusIndex],
-                  style:
-                      TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                  style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
                 ),
               ],
             ),
@@ -322,14 +322,13 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                           boxShadow: done
                               ? [
                                   BoxShadow(
-                                    color: _statusColor.withValues(alpha: 0.4),
+                                    color: _statusColor.withOpacity(0.4),
                                     blurRadius: 8,
                                   )
                                 ]
                               : [],
                         ),
-                        child: Icon(_icons[i],
-                            color: Colors.white, size: 17),
+                        child: Icon(_icons[i], color: Colors.white, size: 17),
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -407,8 +406,8 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
             return Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   child: Row(
                     children: [
                       Expanded(
@@ -429,8 +428,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                                     .map((a) => a.name)
                                     .join(', '),
                                 style: TextStyle(
-                                    color: Colors.grey.shade500,
-                                    fontSize: 11),
+                                    color: Colors.grey.shade500, fontSize: 11),
                               ),
                             if (item.note.trim().isNotEmpty)
                               Text(
@@ -481,8 +479,8 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Total Tagihan',
-                    style: TextStyle(
-                        color: Colors.grey.shade400, fontSize: 13)),
+                    style:
+                        TextStyle(color: Colors.grey.shade400, fontSize: 13)),
                 Text(
                   'Rp ${order.totalPrice.toInt()}',
                   style: const TextStyle(
@@ -505,14 +503,13 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.green.withValues(alpha: 0.08),
+            color: Colors.green.withOpacity(0.08),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+            border: Border.all(color: Colors.green.withOpacity(0.3)),
           ),
           child: const Row(
             children: [
-              Icon(Icons.info_outline_rounded,
-                  color: Colors.green, size: 18),
+              Icon(Icons.info_outline_rounded, color: Colors.green, size: 18),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -552,8 +549,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.lock_clock_rounded,
-            color: Colors.grey.shade700, size: 16),
+        Icon(Icons.lock_clock_rounded, color: Colors.grey.shade700, size: 16),
         const SizedBox(width: 6),
         Text(
           'Mohon tunggu, jangan tutup halaman ini.',

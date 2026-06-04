@@ -17,8 +17,9 @@ class _CashPaymentPageState extends State<CashPaymentPage> {
   double _cashPaid = 0;
   bool _isProcessing = false;
 
-  double get _change =>
-      _cashPaid >= widget.order.totalAmount ? _cashPaid - widget.order.totalAmount : 0;
+  double get _change => _cashPaid >= widget.order.totalAmount
+      ? _cashPaid - widget.order.totalAmount
+      : 0;
 
   bool get _canConfirm => _cashPaid >= widget.order.totalAmount;
 
@@ -64,7 +65,8 @@ class _CashPaymentPageState extends State<CashPaymentPage> {
                 children: [
                   _BillSummary(total: total),
                   const SizedBox(height: 24),
-                  _CashDisplay(cashPaid: _cashPaid, change: _change, total: total),
+                  _CashDisplay(
+                      cashPaid: _cashPaid, change: _change, total: total),
                   const SizedBox(height: 24),
                   const Text(
                     'Nominal Uang Diterima',
@@ -128,12 +130,13 @@ class _BillSummary extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: CashierTheme.accentGold.withValues(alpha: 0.2)),
+        border: Border.all(color: CashierTheme.accentGold.withOpacity(0.2)),
       ),
       child: Column(
         children: [
           const Text('Total yang Harus Dibayar',
-              style: TextStyle(color: CashierTheme.textSecondary, fontSize: 13)),
+              style:
+                  TextStyle(color: CashierTheme.textSecondary, fontSize: 13)),
           const SizedBox(height: 8),
           Text(
             CashierTheme.formatCurrency(total),
@@ -175,8 +178,8 @@ class _CashDisplay extends StatelessWidget {
           color: cashPaid == 0
               ? CashierTheme.divider
               : isEnough
-                  ? CashierTheme.success.withValues(alpha: 0.4)
-                  : CashierTheme.error.withValues(alpha: 0.4),
+                  ? CashierTheme.success.withOpacity(0.4)
+                  : CashierTheme.error.withOpacity(0.4),
         ),
       ),
       child: Column(
@@ -188,9 +191,7 @@ class _CashDisplay extends StatelessWidget {
                   style: TextStyle(
                       color: CashierTheme.textSecondary, fontSize: 13)),
               Text(
-                cashPaid == 0
-                    ? '—'
-                    : CashierTheme.formatCurrency(cashPaid),
+                cashPaid == 0 ? '—' : CashierTheme.formatCurrency(cashPaid),
                 style: TextStyle(
                   color: cashPaid == 0
                       ? CashierTheme.textTertiary
@@ -216,8 +217,7 @@ class _CashDisplay extends StatelessWidget {
                 Text(
                   CashierTheme.formatCurrency(diff.abs()),
                   style: TextStyle(
-                    color:
-                        isEnough ? CashierTheme.success : CashierTheme.error,
+                    color: isEnough ? CashierTheme.success : CashierTheme.error,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -259,13 +259,12 @@ class _SuggestionGrid extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             decoration: BoxDecoration(
               color: isSelected
-                  ? CashierTheme.accentGold.withValues(alpha: 0.15)
+                  ? CashierTheme.accentGold.withOpacity(0.15)
                   : CashierTheme.card,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected
-                    ? CashierTheme.accentGold
-                    : CashierTheme.divider,
+                color:
+                    isSelected ? CashierTheme.accentGold : CashierTheme.divider,
                 width: isSelected ? 1.5 : 1,
               ),
             ),
@@ -323,8 +322,7 @@ class _Numpad extends StatelessWidget {
       child: Column(
         children: [
           const Text('atau masukkan manual',
-              style: TextStyle(
-                  color: CashierTheme.textTertiary, fontSize: 12)),
+              style: TextStyle(color: CashierTheme.textTertiary, fontSize: 12)),
           const SizedBox(height: 14),
           GridView.count(
             shrinkWrap: true,
@@ -339,7 +337,7 @@ class _Numpad extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: key == '⌫'
-                        ? CashierTheme.error.withValues(alpha: 0.1)
+                        ? CashierTheme.error.withOpacity(0.1)
                         : CashierTheme.cardElevated,
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -395,8 +393,8 @@ class _BottomBar extends StatelessWidget {
                 canConfirm ? CashierTheme.success : CashierTheme.card,
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 52),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             textStyle:
                 const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),

@@ -84,7 +84,7 @@ class _AmountCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: CashierTheme.accent.withValues(alpha: 0.2)),
+        border: Border.all(color: CashierTheme.accent.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -122,9 +122,9 @@ class _QrisInfoBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: CashierTheme.accent.withValues(alpha: 0.08),
+        color: CashierTheme.accent.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: CashierTheme.accent.withValues(alpha: 0.25)),
+        border: Border.all(color: CashierTheme.accent.withOpacity(0.25)),
       ),
       child: Row(
         children: [
@@ -132,7 +132,7 @@ class _QrisInfoBanner extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: CashierTheme.accent.withValues(alpha: 0.15),
+              color: CashierTheme.accent.withOpacity(0.15),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
@@ -180,7 +180,10 @@ class _StepGuide extends StatelessWidget {
     const steps = [
       (Icons.person_rounded, 'Customer buka aplikasi dompet digital'),
       (Icons.qr_code_scanner_rounded, 'Scan QRIS tempelan yang ada di warung'),
-      (Icons.check_circle_outline_rounded, 'Tunggu konfirmasi pembayaran dari customer'),
+      (
+        Icons.check_circle_outline_rounded,
+        'Tunggu konfirmasi pembayaran dari customer'
+      ),
       (Icons.touch_app_rounded, 'Klik "Konfirmasi Pembayaran" setelah selesai'),
     ];
 
@@ -209,7 +212,7 @@ class _StepGuide extends StatelessWidget {
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: CashierTheme.accent.withValues(alpha: 0.15),
+                    color: CashierTheme.accent.withOpacity(0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -241,7 +244,8 @@ class _StepGuide extends StatelessWidget {
               const SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.only(left: 13),
-                child: Container(width: 1, height: 14, color: CashierTheme.divider),
+                child: Container(
+                    width: 1, height: 14, color: CashierTheme.divider),
               ),
               const SizedBox(height: 4),
             ],
@@ -288,7 +292,8 @@ class _BottomBar extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
-            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            textStyle:
+                const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
       ),

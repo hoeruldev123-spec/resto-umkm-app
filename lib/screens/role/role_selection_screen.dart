@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../customer/pages/customer_home_page.dart';
+import '../cashier/pages/cashier_dashboard_page.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -9,7 +10,6 @@ class RoleSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
@@ -22,12 +22,10 @@ class RoleSelectionScreen extends StatelessWidget {
           ),
         ),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             /// BUTTON PENGUNJUNG
             SizedBox(
@@ -38,23 +36,18 @@ class RoleSelectionScreen extends StatelessWidget {
                   backgroundColor: Colors.orange,
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          const CustomerHomePage(),
+                      builder: (context) => const CustomerHomePage(),
                     ),
                   );
                 },
-
                 icon: const Icon(Icons.person),
-
                 label: const Text(
                   'Masuk Sebagai Pengunjung',
                   style: TextStyle(
@@ -73,29 +66,21 @@ class RoleSelectionScreen extends StatelessWidget {
               height: 55,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Colors.grey.shade900,
+                  backgroundColor: Colors.grey.shade900,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-
                 onPressed: () {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Halaman kasir belum tersedia',
-                      ),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CashierDashboardPage(),
                     ),
                   );
                 },
-
-                icon:
-                    const Icon(Icons.point_of_sale),
-
+                icon: const Icon(Icons.point_of_sale),
                 label: const Text(
                   'Masuk Sebagai Kasir',
                   style: TextStyle(

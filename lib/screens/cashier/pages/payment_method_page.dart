@@ -113,7 +113,7 @@ class _AmountCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: CashierTheme.accent.withValues(alpha: 0.2)),
+        border: Border.all(color: CashierTheme.accent.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -170,9 +170,7 @@ class _MethodCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: isSelected
-              ? accentColor.withValues(alpha: 0.1)
-              : CashierTheme.card,
+          color: isSelected ? accentColor.withOpacity(0.1) : CashierTheme.card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? accentColor : CashierTheme.divider,
@@ -185,7 +183,7 @@ class _MethodCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: accentColor.withValues(alpha: 0.15),
+                color: accentColor.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(icon, color: accentColor, size: 24),
@@ -198,7 +196,8 @@ class _MethodCard extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      color: isSelected ? accentColor : CashierTheme.textPrimary,
+                      color:
+                          isSelected ? accentColor : CashierTheme.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -259,8 +258,8 @@ class _BottomBar extends StatelessWidget {
                 selected != null ? CashierTheme.accent : CashierTheme.card,
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 52),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             textStyle:
                 const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),

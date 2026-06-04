@@ -34,7 +34,7 @@ class CashierTheme {
           scrolledUnderElevation: 0,
           centerTitle: false,
         ),
-        cardTheme: CardThemeData(
+        cardTheme: CardTheme(
           color: card,
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -77,12 +77,11 @@ class CashierTheme {
       );
 
   static Color withAlpha(Color color, double opacity) =>
-      color.withValues(alpha: opacity);
+      color.withOpacity(opacity);
 
   static String formatCurrency(double amount) {
-    final formatted = amount
-        .toStringAsFixed(0)
-        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
+    final formatted = amount.toStringAsFixed(0).replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
     return 'Rp $formatted';
   }
 

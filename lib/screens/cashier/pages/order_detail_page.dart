@@ -91,9 +91,9 @@ class _OrderStatusBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
         children: [
@@ -167,7 +167,7 @@ class _ItemsCard extends StatelessWidget {
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: CashierTheme.accent.withValues(alpha: 0.15),
+                      color: CashierTheme.accent.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
@@ -218,7 +218,10 @@ class _ItemsCard extends StatelessWidget {
             ),
             if (i < items.length - 1)
               const Divider(
-                  color: CashierTheme.divider, height: 1, indent: 16, endIndent: 16),
+                  color: CashierTheme.divider,
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16),
           ],
         ],
       ),
@@ -241,7 +244,9 @@ class _BillCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _BillRow(label: 'Subtotal', value: CashierTheme.formatCurrency(order.subtotal)),
+          _BillRow(
+              label: 'Subtotal',
+              value: CashierTheme.formatCurrency(order.subtotal)),
           const SizedBox(height: 10),
           _BillRow(
             label: 'PPN 10%',
@@ -291,8 +296,7 @@ class _BillRow extends StatelessWidget {
         Text(
           label,
           style: labelStyle ??
-              const TextStyle(
-                  color: CashierTheme.textSecondary, fontSize: 14),
+              const TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
         ),
         Text(
           value,
@@ -328,9 +332,9 @@ class _PaymentMethodBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: CashierTheme.success.withValues(alpha: 0.1),
+        color: CashierTheme.success.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: CashierTheme.success.withValues(alpha: 0.3)),
+        border: Border.all(color: CashierTheme.success.withOpacity(0.3)),
       ),
       child: Row(
         children: [
@@ -398,8 +402,8 @@ class _PayButton extends StatelessWidget {
                 minimumSize: const Size(double.infinity, 52),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
-                textStyle: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold),
+                textStyle:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),

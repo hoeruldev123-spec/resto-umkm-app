@@ -13,14 +13,10 @@ class CashierDashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final stats = CashierDummyData.statistics;
     final allOrders = CashierDummyData.orders;
-    final activeOrders = allOrders
-        .where((o) => o.status != OrderStatus.paid)
-        .take(3)
-        .toList();
-    final recentPaid = allOrders
-        .where((o) => o.status == OrderStatus.paid)
-        .take(5)
-        .toList();
+    final activeOrders =
+        allOrders.where((o) => o.status != OrderStatus.paid).take(3).toList();
+    final recentPaid =
+        allOrders.where((o) => o.status == OrderStatus.paid).take(5).toList();
     final now = DateTime.now();
     final hour = now.hour;
     final greeting = hour < 11
@@ -239,8 +235,18 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     final dateStr = '${now.day} ${months[now.month - 1]} ${now.year}';
 
@@ -278,12 +284,13 @@ class _Header extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: CashierTheme.accent.withValues(alpha: 0.15),
+                  color: CashierTheme.accent.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: CashierTheme.accent.withValues(alpha: 0.3),
+                    color: CashierTheme.accent.withOpacity(0.3),
                   ),
                 ),
                 child: Row(
@@ -342,7 +349,7 @@ class _RevenueCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: CashierTheme.accentGold.withValues(alpha: 0.2)),
+        border: Border.all(color: CashierTheme.accentGold.withOpacity(0.2)),
       ),
       child: Row(
         children: [
@@ -350,7 +357,7 @@ class _RevenueCard extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: CashierTheme.accentGold.withValues(alpha: 0.15),
+              color: CashierTheme.accentGold.withOpacity(0.15),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
@@ -430,7 +437,7 @@ class _PayMethodCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: CashierTheme.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -438,7 +445,7 @@ class _PayMethodCard extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
+              color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 18),
@@ -514,7 +521,7 @@ class _TransactionCard extends StatelessWidget {
           color: CashierTheme.card,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: CashierTheme.success.withValues(alpha: 0.2),
+            color: CashierTheme.success.withOpacity(0.2),
           ),
         ),
         child: Row(
@@ -523,7 +530,7 @@ class _TransactionCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _methodColor.withValues(alpha: 0.12),
+                color: _methodColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(11),
               ),
               child: Icon(_methodIcon, color: _methodColor, size: 20),
@@ -549,7 +556,7 @@ class _TransactionCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: CashierTheme.success.withValues(alpha: 0.12),
+                          color: CashierTheme.success.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Text(
@@ -619,8 +626,7 @@ class _EmptyTransactions extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             'Belum ada transaksi hari ini',
-            style:
-                TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
+            style: TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
           ),
         ],
       ),
@@ -643,8 +649,7 @@ class _EmptyActiveOrders extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             'Semua pesanan sudah dibayar',
-            style:
-                TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
+            style: TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
           ),
         ],
       ),

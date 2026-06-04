@@ -28,8 +28,7 @@ class ReceiptPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final change =
-        cashPaid > 0 ? cashPaid - order.totalAmount : 0.0;
+    final change = cashPaid > 0 ? cashPaid - order.totalAmount : 0.0;
     final now = DateTime.now();
 
     return Scaffold(
@@ -114,8 +113,8 @@ class ReceiptPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK',
-                style: TextStyle(color: CashierTheme.accent)),
+            child:
+                const Text('OK', style: TextStyle(color: CashierTheme.accent)),
           ),
         ],
       ),
@@ -198,13 +197,13 @@ class _ReceiptCard extends StatelessWidget {
                 const _DashedDivider(),
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 7),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                   decoration: BoxDecoration(
-                    color: CashierTheme.success.withValues(alpha: 0.12),
+                    color: CashierTheme.success.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: CashierTheme.success.withValues(alpha: 0.3),
+                      color: CashierTheme.success.withOpacity(0.3),
                     ),
                   ),
                   child: const Row(
@@ -281,8 +280,7 @@ class _ReceiptCard extends StatelessWidget {
                   valueColor: CashierTheme.accentGold,
                 ),
                 const SizedBox(height: 8),
-                _TotalRow(
-                    label: 'Metode Bayar', value: methodLabel),
+                _TotalRow(label: 'Metode Bayar', value: methodLabel),
                 if (cashPaid > 0) ...[
                   const SizedBox(height: 8),
                   _TotalRow(
@@ -330,8 +328,8 @@ class _ReceiptCard extends StatelessWidget {
                 SizedBox(height: 12),
                 Text(
                   '★ ★ ★',
-                  style: TextStyle(
-                      color: CashierTheme.accentGold, fontSize: 18),
+                  style:
+                      TextStyle(color: CashierTheme.accentGold, fontSize: 18),
                 ),
               ],
             ),
@@ -351,8 +349,7 @@ class _DashedDivider extends StatelessWidget {
       builder: (_, constraints) {
         const dashWidth = 6.0;
         const dashSpace = 4.0;
-        final count =
-            (constraints.maxWidth / (dashWidth + dashSpace)).floor();
+        final count = (constraints.maxWidth / (dashWidth + dashSpace)).floor();
         return Row(
           children: List.generate(
             count,
@@ -420,8 +417,8 @@ class _ReceiptItemRow extends StatelessWidget {
           flex: 5,
           child: Text(
             item.name,
-            style: const TextStyle(
-                color: CashierTheme.textPrimary, fontSize: 13),
+            style:
+                const TextStyle(color: CashierTheme.textPrimary, fontSize: 13),
           ),
         ),
         Expanded(
@@ -438,8 +435,8 @@ class _ReceiptItemRow extends StatelessWidget {
           child: Text(
             CashierTheme.formatCurrency(item.subtotal),
             textAlign: TextAlign.end,
-            style: const TextStyle(
-                color: CashierTheme.textPrimary, fontSize: 13),
+            style:
+                const TextStyle(color: CashierTheme.textPrimary, fontSize: 13),
           ),
         ),
       ],
@@ -468,9 +465,8 @@ class _TotalRow extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: isBold
-                ? CashierTheme.textPrimary
-                : CashierTheme.textSecondary,
+            color:
+                isBold ? CashierTheme.textPrimary : CashierTheme.textSecondary,
             fontSize: isBold ? 15 : 13,
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
           ),

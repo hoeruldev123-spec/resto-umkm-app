@@ -84,7 +84,7 @@ class _AmountCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: CashierTheme.blue.withValues(alpha: 0.2)),
+        border: Border.all(color: CashierTheme.blue.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -122,9 +122,9 @@ class _EdcInfoBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: CashierTheme.blue.withValues(alpha: 0.08),
+        color: CashierTheme.blue.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: CashierTheme.blue.withValues(alpha: 0.25)),
+        border: Border.all(color: CashierTheme.blue.withOpacity(0.25)),
       ),
       child: Row(
         children: [
@@ -132,7 +132,7 @@ class _EdcInfoBanner extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: CashierTheme.blue.withValues(alpha: 0.15),
+              color: CashierTheme.blue.withOpacity(0.15),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
@@ -178,10 +178,16 @@ class _StepGuide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const steps = [
-      (Icons.credit_card_rounded, 'Minta customer siapkan kartu debit atau kredit'),
+      (
+        Icons.credit_card_rounded,
+        'Minta customer siapkan kartu debit atau kredit'
+      ),
       (Icons.point_of_sale_rounded, 'Masukkan atau tempel kartu ke mesin EDC'),
       (Icons.pin_rounded, 'Customer masukkan PIN di mesin EDC'),
-      (Icons.touch_app_rounded, 'Klik "Konfirmasi Pembayaran" setelah approved'),
+      (
+        Icons.touch_app_rounded,
+        'Klik "Konfirmasi Pembayaran" setelah approved'
+      ),
     ];
 
     return Container(
@@ -209,7 +215,7 @@ class _StepGuide extends StatelessWidget {
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: CashierTheme.blue.withValues(alpha: 0.15),
+                    color: CashierTheme.blue.withOpacity(0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -241,7 +247,8 @@ class _StepGuide extends StatelessWidget {
               const SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.only(left: 13),
-                child: Container(width: 1, height: 14, color: CashierTheme.divider),
+                child: Container(
+                    width: 1, height: 14, color: CashierTheme.divider),
               ),
               const SizedBox(height: 4),
             ],
@@ -288,7 +295,8 @@ class _BottomBar extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
-            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            textStyle:
+                const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
       ),

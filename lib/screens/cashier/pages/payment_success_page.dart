@@ -67,9 +67,8 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
 
   @override
   Widget build(BuildContext context) {
-    final change = widget.cashPaid > 0
-        ? widget.cashPaid - widget.order.totalAmount
-        : 0.0;
+    final change =
+        widget.cashPaid > 0 ? widget.cashPaid - widget.order.totalAmount : 0.0;
 
     return Scaffold(
       backgroundColor: CashierTheme.background,
@@ -88,10 +87,10 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: CashierTheme.success.withValues(alpha: 0.15),
+                      color: CashierTheme.success.withOpacity(0.15),
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: CashierTheme.success.withValues(alpha: 0.4),
+                          color: CashierTheme.success.withOpacity(0.4),
                           width: 2),
                     ),
                     child: const Icon(
@@ -260,8 +259,8 @@ class _Row extends StatelessWidget {
         Row(
           children: [
             if (valueIcon != null) ...[
-              Icon(valueIcon, color: valueColor ?? CashierTheme.textPrimary,
-                  size: 15),
+              Icon(valueIcon,
+                  color: valueColor ?? CashierTheme.textPrimary, size: 15),
               const SizedBox(width: 4),
             ],
             Text(

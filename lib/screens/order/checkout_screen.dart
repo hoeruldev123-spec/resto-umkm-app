@@ -243,7 +243,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: Colors.orange.withValues(alpha: 0.15),
+                              color: Colors.orange.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -271,7 +271,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 if (!isLast)
                   Divider(
-                      color: Colors.white10, height: 1, indent: 14, endIndent: 14),
+                      color: Colors.white10,
+                      height: 1,
+                      indent: 14,
+                      endIndent: 14),
               ],
             );
           }),
@@ -280,7 +283,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.08),
+              color: Colors.orange.withOpacity(0.08),
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(16),
                 bottomRight: Radius.circular(16),
@@ -305,8 +308,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   children: [
                     Text(
                       'Total  ',
-                      style: TextStyle(
-                          color: Colors.grey.shade400, fontSize: 13),
+                      style:
+                          TextStyle(color: Colors.grey.shade400, fontSize: 13),
                     ),
                     Text(
                       'Rp ${CartController.totalPrice().toInt()}',
@@ -330,9 +333,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.08),
+        color: Colors.blue.withOpacity(0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.25)),
+        border: Border.all(color: Colors.blue.withOpacity(0.25)),
       ),
       child: Row(
         children: [
@@ -358,7 +361,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         border: Border(top: BorderSide(color: Colors.white10)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.6),
+            color: Colors.black.withOpacity(0.6),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
@@ -371,8 +374,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Total Bayar',
-                  style:
-                      TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
               Text(
                 'Rp ${total.toInt()}',
                 style: const TextStyle(
