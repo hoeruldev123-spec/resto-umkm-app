@@ -29,4 +29,15 @@ class OrderModel {
       status: status ?? this.status,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'customerName': customerName,
+      'tableNumber': tableNumber,
+      'queueNumber': queueNumber,
+      'totalPrice': totalPrice,
+      'status': status.name,
+      'items': items.map((item) => item.toMap()).toList(),
+    };
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../services/firestore_service.dart';
 import '../models/order_model.dart';
 import '../theme/cashier_theme.dart';
 import '../widgets/cashier_app_bar.dart';
@@ -20,9 +21,20 @@ class _QrisPaymentPageState extends State<QrisPaymentPage> {
     setState(() => _isConfirming = true);
     await Future.delayed(const Duration(milliseconds: 400));
     if (!mounted) return;
+
     widget.order.status = OrderStatus.paid;
     widget.order.paymentMethod = PaymentMethod.qris;
     widget.order.paidAt = DateTime.now();
+
+    try {
+      await FirestoreService.updateCashierOrderPayment(
+        orderId: widget.order.id,
+        paymentMethod: PaymentMethod.qris,
+      );
+    } catch (_) {
+      // ignore errors and continue to success screen
+    }
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

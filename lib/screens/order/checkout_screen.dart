@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/order_model.dart';
 import '../../screens/customer/controllers/cart_controller.dart';
+import '../../services/firestore_service.dart';
 import 'controllers/order_controller.dart';
 import 'order_status_screen.dart';
 
@@ -26,7 +27,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
-  void _konfirmasiPesanan() {
+  Future<void> _konfirmasiPesanan() async {
     if (!_formKey.currentState!.validate()) return;
 
     final order = OrderModel(
@@ -37,8 +38,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       totalPrice: CartController.totalPrice(),
     );
 
+    try {
+      await FirestoreService.saveCustomerOrder(order);
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal menyimpan pesanan ke database.'),
+        ),
+      );
+    }
+
     OrderController.addOrder(order);
 
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => OrderStatusScreen(order: order)),

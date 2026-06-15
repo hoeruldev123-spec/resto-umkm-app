@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../data/cashier_dummy_data.dart';
+import '../../../services/firestore_service.dart';
 import '../models/order_model.dart';
 import '../theme/cashier_theme.dart';
 import '../widgets/cashier_app_bar.dart';
@@ -16,48 +16,61 @@ class OrderListPage extends StatefulWidget {
 class _OrderListPageState extends State<OrderListPage> {
   OrderStatus? _filter;
 
-  List<Order> get _filtered {
-    final all = CashierDummyData.orders;
-    if (_filter == null) return all;
-    return all.where((o) => o.status == _filter).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CashierTheme.background,
-      appBar: CashierAppBar(
-        title: 'Daftar Pesanan',
-        subtitle: '${CashierDummyData.orders.length} total pesanan',
-      ),
-      body: Column(
-        children: [
-          _FilterBar(
-            selected: _filter,
-            onSelected: (status) => setState(() => _filter = status),
+    return StreamBuilder<List<Order>>(
+      stream: FirestoreService.streamCashierOrders(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: CashierTheme.background,
+            body: Center(
+              child: CircularProgressIndicator(color: CashierTheme.accent),
+            ),
+          );
+        }
+
+        final orders = snapshot.data ?? [];
+        final filtered = _filter == null
+            ? orders
+            : orders.where((o) => o.status == _filter).toList();
+
+        return Scaffold(
+          backgroundColor: CashierTheme.background,
+          appBar: CashierAppBar(
+            title: 'Daftar Pesanan',
+            subtitle: '${orders.length} total pesanan',
           ),
-          Expanded(
-            child: _filtered.isEmpty
-                ? const _EmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                    itemCount: _filtered.length,
-                    itemBuilder: (context, index) {
-                      final order = _filtered[index];
-                      return OrderCardWidget(
-                        order: order,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => OrderDetailPage(order: order),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+          body: Column(
+            children: [
+              _FilterBar(
+                selected: _filter,
+                onSelected: (status) => setState(() => _filter = status),
+              ),
+              Expanded(
+                child: filtered.isEmpty
+                    ? const _EmptyState()
+                    : ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final order = filtered[index];
+                          return OrderCardWidget(
+                            order: order,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => OrderDetailPage(order: order),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -96,18 +109,14 @@ class _FilterBar extends StatelessWidget {
                 color: isActive ? CashierTheme.accent : CashierTheme.card,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isActive
-                      ? CashierTheme.accent
-                      : CashierTheme.divider,
+                  color: isActive ? CashierTheme.accent : CashierTheme.divider,
                 ),
               ),
               child: Center(
                 child: Text(
                   e.key,
                   style: TextStyle(
-                    color: isActive
-                        ? Colors.white
-                        : CashierTheme.textSecondary,
+                    color: isActive ? Colors.white : CashierTheme.textSecondary,
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                   ),

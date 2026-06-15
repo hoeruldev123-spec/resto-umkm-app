@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../data/cashier_dummy_data.dart';
+import '../../../services/firestore_service.dart';
 import '../models/order_model.dart';
 import '../theme/cashier_theme.dart';
 import '../widgets/order_card_widget.dart';
@@ -11,12 +11,6 @@ class CashierDashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stats = CashierDummyData.statistics;
-    final allOrders = CashierDummyData.orders;
-    final activeOrders =
-        allOrders.where((o) => o.status != OrderStatus.paid).take(3).toList();
-    final recentPaid =
-        allOrders.where((o) => o.status == OrderStatus.paid).take(5).toList();
     final now = DateTime.now();
     final hour = now.hour;
     final greeting = hour < 11
@@ -27,202 +21,244 @@ class CashierDashboardPage extends StatelessWidget {
                 ? 'Selamat Sore'
                 : 'Selamat Malam';
 
-    return Scaffold(
-      backgroundColor: CashierTheme.background,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: _Header(greeting: greeting, now: now),
-            ),
+    return StreamBuilder<List<Order>>(
+      stream: FirestoreService.streamCashierOrders(),
+      builder: (context, snapshot) {
+        final allOrders = snapshot.data ?? [];
+        final stats = _calculateStatistics(allOrders);
+        final activeOrders = allOrders
+            .where((o) => o.status != OrderStatus.paid)
+            .take(3)
+            .toList();
+        final recentPaid = allOrders
+            .where((o) => o.status == OrderStatus.paid)
+            .take(5)
+            .toList();
 
-            // Revenue card
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: _RevenueCard(
-                  revenue: stats['todayRevenue'] as double,
-                  totalPaid: stats['totalPaid'] as int,
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            snapshot.data == null) {
+          return const Scaffold(
+            backgroundColor: CashierTheme.background,
+            body: Center(
+              child: CircularProgressIndicator(color: CashierTheme.accent),
+            ),
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: CashierTheme.background,
+          body: SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _Header(greeting: greeting, now: now),
                 ),
-              ),
-            ),
-
-            // Payment method stats
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Metode Pembayaran Hari Ini',
-                      style: TextStyle(
-                        color: CashierTheme.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: _RevenueCard(
+                      revenue: stats['todayRevenue'] as double,
+                      totalPaid: stats['totalPaid'] as int,
                     ),
-                    const SizedBox(height: 12),
-                    Row(
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: _PayMethodCard(
-                            label: 'QRIS',
-                            count: stats['qrisCount'] as int,
-                            icon: Icons.qr_code_2_rounded,
-                            color: CashierTheme.accent,
+                        const Text(
+                          'Metode Pembayaran Hari Ini',
+                          style: TextStyle(
+                            color: CashierTheme.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _PayMethodCard(
-                            label: 'Tunai',
-                            count: stats['cashCount'] as int,
-                            icon: Icons.payments_rounded,
-                            color: CashierTheme.accentGold,
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _PayMethodCard(
+                                label: 'QRIS',
+                                count: stats['qrisCount'] as int,
+                                icon: Icons.qr_code_2_rounded,
+                                color: CashierTheme.accent,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _PayMethodCard(
+                                label: 'Tunai',
+                                count: stats['cashCount'] as int,
+                                icon: Icons.payments_rounded,
+                                color: CashierTheme.accentGold,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _PayMethodCard(
+                                label: 'EDC',
+                                count: stats['edcCount'] as int,
+                                icon: Icons.credit_card_rounded,
+                                color: CashierTheme.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Transaksi Terbaru',
+                          style: TextStyle(
+                            color: CashierTheme.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _PayMethodCard(
-                            label: 'EDC',
-                            count: stats['edcCount'] as int,
-                            icon: Icons.credit_card_rounded,
-                            color: CashierTheme.blue,
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const OrderListPage(),
+                            ),
+                          ),
+                          child: const Text(
+                            'Lihat Semua →',
+                            style: TextStyle(
+                              color: CashierTheme.accent,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-
-            // Transaksi Terbaru header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Transaksi Terbaru',
-                      style: TextStyle(
-                        color: CashierTheme.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const OrderListPage(),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                  sliver: recentPaid.isEmpty
+                      ? const SliverToBoxAdapter(
+                          child: _EmptyTransactions(),
+                        )
+                      : SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => OrderCardWidget(
+                              order: recentPaid[index],
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      OrderDetailPage(order: recentPaid[index]),
+                                ),
+                              ),
+                            ),
+                            childCount: recentPaid.length,
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        'Lihat Semua →',
-                        style: TextStyle(
-                          color: CashierTheme.accent,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
-              ),
-            ),
-
-            // Paid transactions list
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-              sliver: recentPaid.isEmpty
-                  ? const SliverToBoxAdapter(
-                      child: _EmptyTransactions(),
-                    )
-                  : SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => _TransactionCard(
-                          order: recentPaid[index],
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Pesanan Aktif',
+                          style: TextStyle(
+                            color: CashierTheme.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        GestureDetector(
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  OrderDetailPage(order: recentPaid[index]),
+                              builder: (_) => const OrderListPage(),
+                            ),
+                          ),
+                          child: const Text(
+                            'Lihat Semua →',
+                            style: TextStyle(
+                              color: CashierTheme.accent,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        childCount: recentPaid.length,
-                      ),
+                      ],
                     ),
-            ),
-
-            // Pesanan Aktif header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Pesanan Aktif',
-                      style: TextStyle(
-                        color: CashierTheme.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const OrderListPage(),
-                        ),
-                      ),
-                      child: const Text(
-                        'Lihat Semua →',
-                        style: TextStyle(
-                          color: CashierTheme.accent,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+                  sliver: activeOrders.isEmpty
+                      ? const SliverToBoxAdapter(
+                          child: _EmptyActiveOrders(),
+                        )
+                      : SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final order = activeOrders[index];
+                              return OrderCardWidget(
+                                order: order,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        OrderDetailPage(order: order),
+                                  ),
+                                ),
+                              );
+                            },
+                            childCount: activeOrders.length,
+                          ),
+                        ),
+                ),
+              ],
             ),
-
-            // Active orders list
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-              sliver: activeOrders.isEmpty
-                  ? const SliverToBoxAdapter(
-                      child: _EmptyActiveOrders(),
-                    )
-                  : SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final order = activeOrders[index];
-                          return OrderCardWidget(
-                            order: order,
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => OrderDetailPage(order: order),
-                              ),
-                            ),
-                          );
-                        },
-                        childCount: activeOrders.length,
-                      ),
-                    ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+  }
+
+  Map<String, dynamic> _calculateStatistics(List<Order> orders) {
+    final today = DateTime.now();
+
+    final totalPaid = orders.where((o) => o.status == OrderStatus.paid).length;
+    final qrisCount =
+        orders.where((o) => o.paymentMethod == PaymentMethod.qris).length;
+    final cashCount =
+        orders.where((o) => o.paymentMethod == PaymentMethod.cash).length;
+    final edcCount =
+        orders.where((o) => o.paymentMethod == PaymentMethod.edc).length;
+    final todayRevenue = orders
+        .where((o) => o.paidAt != null && _isSameDay(o.paidAt!, today))
+        .fold<double>(0, (sum, o) => sum + o.totalAmount);
+
+    return {
+      'totalPaid': totalPaid,
+      'qrisCount': qrisCount,
+      'cashCount': cashCount,
+      'edcCount': edcCount,
+      'todayRevenue': todayRevenue,
+    };
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }
 
@@ -433,179 +469,46 @@ class _PayMethodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: CashierTheme.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withOpacity(0.2)),
+        color: CashierTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: CashierTheme.divider),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 18),
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: TextStyle(
+                  color: CashierTheme.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
           Text(
-            '$count',
+            '$count transaksi',
             style: const TextStyle(
-              color: CashierTheme.textPrimary,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
+              color: CashierTheme.textSecondary,
+              fontSize: 12,
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TransactionCard extends StatelessWidget {
-  final Order order;
-  final VoidCallback onTap;
-
-  const _TransactionCard({required this.order, required this.onTap});
-
-  Color get _methodColor {
-    switch (order.paymentMethod) {
-      case PaymentMethod.qris:
-        return CashierTheme.accent;
-      case PaymentMethod.edc:
-        return CashierTheme.blue;
-      case PaymentMethod.cash:
-        return CashierTheme.accentGold;
-      case null:
-        return CashierTheme.textSecondary;
-    }
-  }
-
-  IconData get _methodIcon {
-    switch (order.paymentMethod) {
-      case PaymentMethod.qris:
-        return Icons.qr_code_rounded;
-      case PaymentMethod.edc:
-        return Icons.credit_card_rounded;
-      case PaymentMethod.cash:
-        return Icons.payments_rounded;
-      case null:
-        return Icons.help_outline_rounded;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final timeLabel = order.paidAt != null
-        ? CashierTheme.formatTime(order.paidAt!)
-        : CashierTheme.formatTime(order.createdAt);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: CashierTheme.card,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: CashierTheme.success.withOpacity(0.2),
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: _methodColor.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(11),
-              ),
-              child: Icon(_methodIcon, color: _methodColor, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        order.id,
-                        style: const TextStyle(
-                          color: CashierTheme.textTertiary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: CashierTheme.success.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          'LUNAS',
-                          style: TextStyle(
-                            color: CashierTheme.success,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${order.customerName} · Meja ${order.tableNumber}',
-                    style: const TextStyle(
-                      color: CashierTheme.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  CashierTheme.formatCurrency(order.totalAmount),
-                  style: const TextStyle(
-                    color: CashierTheme.accentGold,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  timeLabel,
-                  style: const TextStyle(
-                    color: CashierTheme.textTertiary,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -617,18 +520,12 @@ class _EmptyTransactions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 24),
-      alignment: Alignment.center,
-      child: const Column(
-        children: [
-          Icon(Icons.receipt_long_rounded,
-              size: 40, color: CashierTheme.textTertiary),
-          SizedBox(height: 8),
-          Text(
-            'Belum ada transaksi hari ini',
-            style: TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: const Center(
+        child: Text(
+          'Belum ada transaksi lunas',
+          style: TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
+        ),
       ),
     );
   }
@@ -640,18 +537,12 @@ class _EmptyActiveOrders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 24),
-      alignment: Alignment.center,
-      child: const Column(
-        children: [
-          Icon(Icons.done_all_rounded,
-              size: 40, color: CashierTheme.textTertiary),
-          SizedBox(height: 8),
-          Text(
-            'Semua pesanan sudah dibayar',
-            style: TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: const Center(
+        child: Text(
+          'Tidak ada pesanan aktif saat ini',
+          style: TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
+        ),
       ),
     );
   }

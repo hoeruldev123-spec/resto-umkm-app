@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/order_model.dart';
 import '../../screens/customer/controllers/cart_controller.dart';
+import '../../services/firestore_service.dart';
 import 'controllers/order_controller.dart';
 
 class OrderStatusScreen extends StatefulWidget {
@@ -50,17 +51,21 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
   }
 
   void _startSimulation() {
-    _timer = Timer(const Duration(seconds: 5), () {
+    _timer = Timer(const Duration(seconds: 5), () async {
       if (!mounted) return;
       setState(() => _statusIndex = 1);
       OrderController.updateStatus(
           widget.order.queueNumber, OrderStatus.diproses);
+      await FirestoreService.updateCustomerOrderStatus(
+          widget.order.queueNumber, OrderStatus.diproses);
 
-      _timer = Timer(const Duration(seconds: 7), () {
+      _timer = Timer(const Duration(seconds: 7), () async {
         if (!mounted) return;
         setState(() => _statusIndex = 2);
         _pulseController.stop();
         OrderController.updateStatus(
+            widget.order.queueNumber, OrderStatus.selesai);
+        await FirestoreService.updateCustomerOrderStatus(
             widget.order.queueNumber, OrderStatus.selesai);
         CartController.cartItems.clear();
       });

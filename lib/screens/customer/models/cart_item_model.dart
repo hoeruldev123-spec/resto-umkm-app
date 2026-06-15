@@ -21,4 +21,14 @@ class CartItemModel {
     );
     return (menu.price + addonsPrice) * quantity;
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': menu.name,
+      'unitPrice': menu.price,
+      'quantity': quantity,
+      'note': note,
+      'selectedAddOns': selectedAddOns.map((addon) => addon.toMap()).toList(),
+    };
+  }
 }

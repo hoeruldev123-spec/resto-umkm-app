@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../customer/pages/customer_home_page.dart';
 import '../cashier/pages/cashier_dashboard_page.dart';
+import '../../services/firestore_service.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -89,6 +90,30 @@ class RoleSelectionScreen extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+
+            // testing tombol untuk cek koneksi ke Firebase
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await FirestoreService.testConnection();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Data berhasil dikirim ke Firebase'),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: $e'),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Test Firebase'),
             ),
           ],
         ),

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "149831992733",
+    "project_id": "resto-umkm-app",
+    "storage_bucket": "resto-umkm-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149831992733:android:15aa60625fae60f3e79b74",
+        "android_client_info": {
+          "package_name": "com.example.resto_umkm_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfmR1NCqqFi5JK9GqaaNmvJkgk8SGSNG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
