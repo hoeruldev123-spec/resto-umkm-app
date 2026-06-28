@@ -23,12 +23,13 @@ class CartItemModel {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'name': menu.name,
-      'unitPrice': menu.price,
-      'quantity': quantity,
-      'note': note,
-      'selectedAddOns': selectedAddOns.map((addon) => addon.toMap()).toList(),
-    };
-  }
+  final addOnsPrice = selectedAddOns.fold(0.0, (sum, addon) => sum + addon.price);
+  return {
+    'name': menu.name,
+    'unitPrice': menu.price + addOnsPrice,
+    'quantity': quantity,
+    'note': note,
+    'selectedAddOns': selectedAddOns.map((addon) => addon.toMap()).toList(),
+  };
+}
 }
