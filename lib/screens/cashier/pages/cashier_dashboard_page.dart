@@ -3,6 +3,7 @@ import '../../../services/firestore_service.dart';
 import '../models/order_model.dart';
 import '../theme/cashier_theme.dart';
 import '../widgets/order_card_widget.dart';
+import 'income_report_page.dart';
 import 'order_detail_page.dart';
 import 'order_list_page.dart';
 
@@ -109,6 +110,12 @@ class CashierDashboardPage extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: _ReportShortcut(),
                   ),
                 ),
                 SliverToBoxAdapter(
@@ -542,6 +549,74 @@ class _EmptyActiveOrders extends StatelessWidget {
         child: Text(
           'Tidak ada pesanan aktif saat ini',
           style: TextStyle(color: CashierTheme.textSecondary, fontSize: 14),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReportShortcut extends StatelessWidget {
+  const _ReportShortcut();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const IncomeReportPage()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: CashierTheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: CashierTheme.accent.withOpacity(0.4)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: CashierTheme.accent.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.bar_chart_rounded,
+                color: CashierTheme.accent,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Laporan Pendapatan',
+                    style: TextStyle(
+                      color: CashierTheme.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Lihat statistik & export PDF',
+                    style: TextStyle(
+                      color: CashierTheme.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: CashierTheme.textTertiary,
+              size: 14,
+            ),
+          ],
         ),
       ),
     );
