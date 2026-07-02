@@ -1,18 +1,48 @@
 import 'package:flutter/material.dart';
+import '../../../services/firestore_service.dart';
 import '../models/order_model.dart';
 import '../theme/cashier_theme.dart';
 import '../widgets/cashier_app_bar.dart';
 import 'payment_method_page.dart';
 
-class OrderDetailPage extends StatelessWidget {
+class OrderDetailPage extends StatefulWidget {
   final Order order;
 
   const OrderDetailPage({super.key, required this.order});
 
   @override
+  State<OrderDetailPage> createState() => _OrderDetailPageState();
+}
+
+class _OrderDetailPageState extends State<OrderDetailPage> {
+  late OrderStatus _status;
+  bool _isUpdating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _status = widget.order.status;
+  }
+
+  Future<void> _updateStatus(OrderStatus newStatus) async {
+    setState(() => _isUpdating = true);
+    await FirestoreService.updateCashierOrderStatus(
+      orderId: widget.order.id,
+      status: newStatus,
+    );
+    if (!mounted) return;
+    setState(() {
+      _status = newStatus;
+      widget.order.status = newStatus;
+      _isUpdating = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isPaid = order.status == OrderStatus.paid;
-    final canPay = order.status == OrderStatus.ready;
+    final order = widget.order;
+    final isPaid = _status == OrderStatus.paid;
+    final canPay = _status == OrderStatus.ready;
 
     return Scaffold(
       backgroundColor: CashierTheme.background,
@@ -28,8 +58,14 @@ class OrderDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _OrderStatusBanner(status: order.status),
-                  const SizedBox(height: 20),
+                  _OrderStatusBanner(status: _status),
+                  const SizedBox(height: 16),
+                  _StatusActionButton(
+                    status: _status,
+                    isUpdating: _isUpdating,
+                    onPressed: _updateStatus,
+                  ),
+                  const SizedBox(height: 4),
                   const _SectionTitle(title: 'Detail Pesanan'),
                   const SizedBox(height: 12),
                   _ItemsCard(items: order.items),
@@ -48,6 +84,65 @@ class OrderDetailPage extends StatelessWidget {
           ),
           if (canPay) _PayButton(order: order),
         ],
+      ),
+    );
+  }
+}
+
+class _StatusActionButton extends StatelessWidget {
+  final OrderStatus status;
+  final bool isUpdating;
+  final ValueChanged<OrderStatus> onPressed;
+
+  const _StatusActionButton({
+    required this.status,
+    required this.isUpdating,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    String label;
+    OrderStatus nextStatus;
+
+    switch (status) {
+      case OrderStatus.pending:
+        label = 'Proses Pesanan';
+        nextStatus = OrderStatus.processing;
+      case OrderStatus.processing:
+        label = 'Tandai Ready';
+        nextStatus = OrderStatus.ready;
+      case OrderStatus.ready:
+      case OrderStatus.paid:
+        return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: isUpdating ? null : () => onPressed(nextStatus),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: CashierTheme.accent,
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 48),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14)),
+            textStyle:
+                const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+          child: isUpdating
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(label),
+        ),
       ),
     );
   }

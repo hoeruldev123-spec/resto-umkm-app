@@ -128,6 +128,19 @@ class FirestoreService {
     }
   }
 
+  static Stream<OrderStatus> streamCustomerOrderStatus(int queueNumber) {
+    return _orders
+        .where('queueNumber', isEqualTo: queueNumber)
+        .limit(1)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isEmpty) return OrderStatus.menunggu;
+      final data = snapshot.docs.first.data() as Map<String, dynamic>;
+      return _customerStatusFromFirestoreString(
+          data['status']?.toString() ?? 'pending');
+    });
+  }
+
   static String _customerStatusToFirestoreString(OrderStatus status) {
     switch (status) {
       case OrderStatus.menunggu:
@@ -136,6 +149,18 @@ class FirestoreService {
         return 'processing';
       case OrderStatus.selesai:
         return 'ready';
+    }
+  }
+
+  static OrderStatus _customerStatusFromFirestoreString(String value) {
+    switch (value) {
+      case 'processing':
+        return OrderStatus.diproses;
+      case 'ready':
+        return OrderStatus.selesai;
+      case 'pending':
+      default:
+        return OrderStatus.menunggu;
     }
   }
 

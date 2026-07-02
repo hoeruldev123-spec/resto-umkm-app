@@ -1,11 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../../models/order_model.dart';
 import '../../screens/customer/controllers/cart_controller.dart';
 import '../../services/firestore_service.dart';
-import 'controllers/order_controller.dart';
 
 class OrderStatusScreen extends StatefulWidget {
   final OrderModel order;
@@ -18,8 +15,6 @@ class OrderStatusScreen extends StatefulWidget {
 
 class _OrderStatusScreenState extends State<OrderStatusScreen>
     with TickerProviderStateMixin {
-  int _statusIndex = 0;
-  Timer? _timer;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
 
@@ -46,128 +41,129 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     _pulseAnim = Tween<double>(begin: 0.85, end: 1.0).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-
-    _startSimulation();
-  }
-
-  void _startSimulation() {
-    _timer = Timer(const Duration(seconds: 5), () async {
-      if (!mounted) return;
-      setState(() => _statusIndex = 1);
-      OrderController.updateStatus(
-          widget.order.queueNumber, OrderStatus.diproses);
-      await FirestoreService.updateCustomerOrderStatus(
-          widget.order.queueNumber, OrderStatus.diproses);
-
-      _timer = Timer(const Duration(seconds: 7), () async {
-        if (!mounted) return;
-        setState(() => _statusIndex = 2);
-        _pulseController.stop();
-        OrderController.updateStatus(
-            widget.order.queueNumber, OrderStatus.selesai);
-        await FirestoreService.updateCustomerOrderStatus(
-            widget.order.queueNumber, OrderStatus.selesai);
-        CartController.cartItems.clear();
-      });
-    });
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
     _pulseController.dispose();
     super.dispose();
   }
 
-  Color get _statusColor {
-    if (_statusIndex == 2) return Colors.green;
-    if (_statusIndex == 1) return Colors.orange;
+  static int _statusIndexOf(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.menunggu:
+        return 0;
+      case OrderStatus.diproses:
+        return 1;
+      case OrderStatus.selesai:
+        return 2;
+    }
+  }
+
+  Color _statusColorOf(int statusIndex) {
+    if (statusIndex == 2) return Colors.green;
+    if (statusIndex == 1) return Colors.orange;
     return Colors.blueGrey;
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: _statusIndex == 2,
-      child: Scaffold(
-        backgroundColor: const Color(0xFF0A0A0A),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF0A0A0A),
-          foregroundColor: Colors.white,
-          automaticallyImplyLeading: _statusIndex == 2,
-          elevation: 0,
-          title: const Text(
-            'Status Pesanan',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          actions: [
-            if (_statusIndex < 2)
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Center(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white10,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        const SizedBox(
-                          width: 8,
-                          height: 8,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.orange,
-                          ),
+    return StreamBuilder<OrderStatus>(
+      stream:
+          FirestoreService.streamCustomerOrderStatus(widget.order.queueNumber),
+      initialData: widget.order.status,
+      builder: (context, snapshot) {
+        final statusIndex = _statusIndexOf(snapshot.data ?? widget.order.status);
+        final statusColor = _statusColorOf(statusIndex);
+
+        if (statusIndex == 2) {
+          _pulseController.stop();
+          CartController.cartItems.clear();
+        }
+
+        return PopScope(
+          canPop: statusIndex == 2,
+          child: Scaffold(
+            backgroundColor: const Color(0xFF0A0A0A),
+            appBar: AppBar(
+              backgroundColor: const Color(0xFF0A0A0A),
+              foregroundColor: Colors.white,
+              automaticallyImplyLeading: statusIndex == 2,
+              elevation: 0,
+              title: const Text(
+                'Status Pesanan',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              actions: [
+                if (statusIndex < 2)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white10,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Live',
-                          style: TextStyle(
-                              color: Colors.grey.shade400, fontSize: 12),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 8,
+                              height: 8,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.orange,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Live',
+                              style: TextStyle(
+                                  color: Colors.grey.shade400, fontSize: 12),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+              ],
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+              child: Column(
+                children: [
+                  // --- Nomor Antrian ---
+                  _buildQueueCard(statusIndex),
+                  const SizedBox(height: 20),
+
+                  // --- Status Card ---
+                  _buildStatusCard(statusIndex, statusColor),
+                  const SizedBox(height: 20),
+
+                  // --- Step Tracker ---
+                  _buildStepTracker(statusIndex, statusColor),
+                  const SizedBox(height: 24),
+
+                  // --- Detail Pesanan ---
+                  _buildOrderDetail(),
+                  const SizedBox(height: 24),
+
+                  // --- Info / CTA ---
+                  if (statusIndex == 2)
+                    _buildDoneButton()
+                  else
+                    _buildWaitingNote(),
+                ],
               ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-          child: Column(
-            children: [
-              // --- Nomor Antrian ---
-              _buildQueueCard(),
-              const SizedBox(height: 20),
-
-              // --- Status Card ---
-              _buildStatusCard(),
-              const SizedBox(height: 20),
-
-              // --- Step Tracker ---
-              _buildStepTracker(),
-              const SizedBox(height: 24),
-
-              // --- Detail Pesanan ---
-              _buildOrderDetail(),
-              const SizedBox(height: 24),
-
-              // --- Info / CTA ---
-              if (_statusIndex == 2)
-                _buildDoneButton()
-              else
-                _buildWaitingNote(),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildQueueCard() {
+  Widget _buildQueueCard(int statusIndex) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
@@ -188,7 +184,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
           ),
           const SizedBox(height: 10),
           ScaleTransition(
-            scale: _statusIndex < 2
+            scale: statusIndex < 2
                 ? _pulseAnim
                 : const AlwaysStoppedAnimation(1.0),
             child: Container(
@@ -246,25 +242,25 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     );
   }
 
-  Widget _buildStatusCard() {
+  Widget _buildStatusCard(int statusIndex, Color statusColor) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _statusColor.withOpacity(0.08),
+        color: statusColor.withOpacity(0.08),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _statusColor.withOpacity(0.35)),
+        border: Border.all(color: statusColor.withOpacity(0.35)),
       ),
       child: Row(
         children: [
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 400),
             child: Icon(
-              _icons[_statusIndex],
-              key: ValueKey(_statusIndex),
-              color: _statusColor,
+              _icons[statusIndex],
+              key: ValueKey(statusIndex),
+              color: statusColor,
               size: 44,
             ),
           ),
@@ -276,10 +272,10 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: Text(
-                    _labels[_statusIndex],
-                    key: ValueKey(_statusIndex),
+                    _labels[statusIndex],
+                    key: ValueKey(statusIndex),
                     style: TextStyle(
-                      color: _statusColor,
+                      color: statusColor,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -287,7 +283,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _descs[_statusIndex],
+                  _descs[statusIndex],
                   style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
                 ),
               ],
@@ -298,7 +294,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     );
   }
 
-  Widget _buildStepTracker() {
+  Widget _buildStepTracker(int statusIndex, Color statusColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       decoration: BoxDecoration(
@@ -308,7 +304,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
       ),
       child: Row(
         children: List.generate(3, (i) {
-          final done = i <= _statusIndex;
+          final done = i <= statusIndex;
           final isLast = i == 2;
 
           return Expanded(
@@ -322,12 +318,12 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: done ? _statusColor : Colors.grey.shade800,
+                          color: done ? statusColor : Colors.grey.shade800,
                           shape: BoxShape.circle,
                           boxShadow: done
                               ? [
                                   BoxShadow(
-                                    color: _statusColor.withOpacity(0.4),
+                                    color: statusColor.withOpacity(0.4),
                                     blurRadius: 8,
                                   )
                                 ]
@@ -356,8 +352,8 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                         duration: const Duration(milliseconds: 500),
                         height: 2,
                         decoration: BoxDecoration(
-                          color: i < _statusIndex
-                              ? _statusColor
+                          color: i < statusIndex
+                              ? statusColor
                               : Colors.grey.shade800,
                           borderRadius: BorderRadius.circular(2),
                         ),
